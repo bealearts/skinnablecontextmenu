@@ -6,7 +6,7 @@
 >
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
-		<ui:SkinnableContextMenu />
+		<ui:SkinnableContextMenu showDefaultItems="true" />
 	</fx:Declarations>
 
 	
