@@ -21,6 +21,8 @@ package com.bealearts.ui
 	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
 	import flash.geom.Point;
+	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
 	import flash.system.Capabilities;
 	import flash.system.Security;
 	import flash.system.System;
@@ -35,6 +37,8 @@ package com.bealearts.ui
 	import mx.core.UIComponent;
 	import mx.events.MenuEvent;
 	
+	import org.osmf.utils.URL;
+	
 	import spark.components.Application;
 
 	
@@ -44,6 +48,14 @@ package com.bealearts.ui
 	public final class SkinnableContextMenu
 	{
 		/* PUBLIC */
+		
+		/**
+		 * Display default flash items
+		 * 
+		 * <p>Display the Settings, Global Settings and About Flash menu items</p>
+		 */
+		public var showDefaultItems:Boolean = true;
+		
 		
 		/**
 		 * Constructor
@@ -102,6 +114,16 @@ package com.bealearts.ui
 		private var settingsMenuItem:ContextMenuItem = new ContextMenuItem('Settings...', true);
 		private var globalSettingsMenuItem:ContextMenuItem = new ContextMenuItem('Global Settings...', false);
 		
+		/**
+		 * Clipboard menu items
+		 */
+		private var cutMenuItem:ContextMenuItem = new ContextMenuItem('Cut');
+		private var copyMenuItem:ContextMenuItem = new ContextMenuItem('Copy');
+		private var pasteMenuItem:ContextMenuItem = new ContextMenuItem('Paste');
+		private var deleteMenuItem:ContextMenuItem = new ContextMenuItem('Delete');
+		private var selectAllMenuItem:ContextMenuItem = new ContextMenuItem('Select All', true);
+		
+		
 		
 		/**
 		 * Handle right click from Javascript
@@ -140,15 +162,44 @@ package com.bealearts.ui
 			
 			// Default items
 			var defaultItems:Array = [
-				new ContextMenuItem('Custom', false),
 				this.settingsMenuItem,
 				this.globalSettingsMenuItem,
 				this.aboutMenuItem
 			];
 			
 			
+		
+			
 			// Build items
-			var menuItems:Array = contextMenu.customItems.concat(defaultItems);
+			
+			var menuItems:Array = (new Array).concat( contextMenu.customItems );
+			
+			// Clipboard items
+			if (contextMenu.clipboardMenu)
+			{
+				if ( contextMenu.clipboardItems.cut )
+					menuItems.push( this.cutMenuItem );
+				
+				if ( contextMenu.clipboardItems.copy )
+					menuItems.push( this.copyMenuItem );
+				
+				if ( contextMenu.clipboardItems.paste )
+					menuItems.push( this.pasteMenuItem );
+				
+				if ( contextMenu.clipboardItems.clear )
+					menuItems.push( this.deleteMenuItem );
+				
+				// Select All
+				if ( contextMenu.clipboardItems.selectAll )
+					menuItems.push( this.selectAllMenuItem );
+			}
+			
+			// Default Flash Player items
+			if ( this.showDefaultItems )
+				menuItems = menuItems.concat(defaultItems);
+			
+			
+			
 			
 			// Process seperators
 			var collection:ArrayCollection = new ArrayCollection(menuItems);
@@ -217,11 +268,11 @@ package com.bealearts.ui
 		
 		
 		/**
-		 * OPen a URL
+		 * Open a URL
 		 */
 		private function openURL(url:String):void
 		{
-			
+			navigateToURL( new URLRequest(url) );
 		}
 		
 	}
