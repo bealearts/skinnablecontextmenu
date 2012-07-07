@@ -17,6 +17,9 @@
  */
 package com.bealearts.util
 {
+import flash.desktop.Clipboard;
+import flash.desktop.ClipboardFormats;
+
 /**
 	 * External Clipboard, with no security restrictions on paste (text only)
 	 * 

@@ -15,10 +15,35 @@
  * limitations under the License.
  *
  */
-package com.bealearts.ui
+package com.bealearts.menu
 {
 import com.bealearts.util.ExternalClipboard;
-import com.bealearts.util.JavascriptInjector;
+import com.bealearts.util.JavascriptContainer;
+
+import flash.desktop.ClipboardFormats;
+import flash.display.DisplayObjectContainer;
+
+import flash.events.EventDispatcher;
+import flash.external.ExternalInterface;
+import flash.geom.Point;
+import flash.net.URLRequest;
+import flash.net.navigateToURL;
+import flash.system.Capabilities;
+import flash.system.Security;
+import flash.ui.ContextMenu;
+import flash.ui.ContextMenuItem;
+
+import mx.collections.ArrayCollection;
+import mx.collections.IViewCursor;
+
+import mx.controls.Menu;
+
+import mx.core.FlexGlobals;
+import mx.core.UIComponent;
+import mx.events.MenuEvent;
+import mx.managers.IFocusManagerComponent;
+
+import spark.core.IEditableText;
 
 /**
 	 * Turns the Flex Context Menu from a Native implementation into a standard skinnable Flex menu
@@ -41,7 +66,7 @@ import com.bealearts.util.JavascriptInjector;
 		public function SkinnableContextMenu()
 		{
 			if (instansiated)
-				throw new Error('Class can only be instansiated once');
+				throw new Error('Class can only be instantiated once');
 			
 			instansiated = true;
 			
@@ -52,11 +77,13 @@ import com.bealearts.util.JavascriptInjector;
 				this.aboutMenuItem
 			];
 			
-			// Setup javascriot to listen for right click
-			if (JavascriptInjector.inject(javascriptCode))
+			// Setup javaScript to listen for right click
+			if (JavascriptContainer.objectID)
 			{
+                JavascriptContainer.inject(javascriptCode);
+
 				// Create class
-				ExternalInterface.call('eval', 'window.skinnableContextMenu = new SkinnableContextMenu("' + ExternalInterface.objectID + '");');
+				JavascriptContainer.execute('window.skinnableContextMenu = new SkinnableContextMenu("' + JavascriptContainer.objectID + '");');
 				
 				ExternalInterface.addCallback('rightMouseClick', this.onRightClick);
 			}
@@ -75,7 +102,7 @@ import com.bealearts.util.JavascriptInjector;
 		/**
 		 * Reference to the application
 		 */
-		private var app:Application = Application(FlexGlobals.topLevelApplication);
+		private var app:DisplayObjectContainer = DisplayObjectContainer(FlexGlobals.topLevelApplication);
 		
 		
 		/**
