@@ -17,16 +17,32 @@
  */
 package com.bealearts.util
 {
+import flash.external.ExternalInterface;
+
+import mx.core.ByteArrayAsset;
+
 /**
-	 * Injects Javascript into the container browser
+	 * Javascript Container Utilities
 	 */
-	public class JavascriptInjector
+	public class JavascriptContainer
 	{
-		public function JavascriptInjector()
+		public function JavascriptContainer()
 		{
 			throw new Error("Static class, do not instantiate");
 		}
-		
+
+
+        /**
+        * Containers objectID for the flash player
+        */
+        public static function get objectID():String
+        {
+            if (ExternalInterface.available)
+                return ExternalInterface.objectID
+            else
+                return null;
+        }
+
 		
 		/**
 		 * Inject Javascript
@@ -48,5 +64,23 @@ package com.bealearts.util
 
 			return true;
 		}
+
+
+        /**
+         * Execute Javascript
+         */
+        public static function execute(code:String):Boolean
+        {
+            // Can't do anything if there is not a browser!
+            if ( !ExternalInterface.available )
+                return false;
+
+            ExternalInterface.call('eval', code);
+
+            return true;
+        }
+
+
+
 	}
 }

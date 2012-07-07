@@ -15,8 +15,13 @@
  * limitations under the License.
  *
  */
-package com.bealearts.ui
+package com.bealearts.menu
 {
+import flash.ui.ContextMenuItem;
+
+import mx.collections.ICollectionView;
+import mx.controls.menuClasses.IMenuDataDescriptor;
+
 /**
 	 * Menu descriptor based on the ContextMenuItem
 	 */ 
