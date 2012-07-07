@@ -1,0 +1,274 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.bealearts</groupId>
+	<artifactId>skinnable-context-menu</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>VectorCollection</name>
+	<description>Flex library which allows one to wrap a Vector in order to access it using Binding in the same way as an ArrayCollection.</description>
+	<url>http://vectorcollection.riaforge.org/</url>
+
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+
+	<properties>
+		<flex-framework.version>4.5.1.21328</flex-framework.version>
+		<flexmojos.version>4.0-RC2</flexmojos.version>
+		<flexunit4.version>4.1-RC2</flexunit4.version>
+	</properties>
+    
+    <modules>
+        <module>skinnable-context-menu-lib</module>
+        <module>skinnable-context-menu-example</module>
+    </modules>
+
+	<build>
+		<sourceDirectory>skinnable-context-menu-lib/src/main/flex</sourceDirectory>
+		<testSourceDirectory>skinnable-context-menu-lib/src/test/flex</testSourceDirectory>
+
+		<plugins>
+			<plugin>
+				<groupId>org.sonatype.flexmojos</groupId>
+				<artifactId>flexmojos-maven-plugin</artifactId>
+				<version>${flexmojos.version}</version>
+				<extensions>true</extensions>
+
+				<dependencies>
+					<dependency>
+						<groupId>com.adobe.flex</groupId>
+						<artifactId>compiler</artifactId>
+						<version>${flex-framework.version}</version>
+						<type>pom</type>
+					</dependency>
+				</dependencies>
+
+				<configuration>
+					<includeAsClasses>
+						<sources>
+							<directory>${basedir}/src/main/flex</directory>
+						</sources>
+					</includeAsClasses>
+
+					<sourcePaths>
+						<path>src/main/flex</path>
+						<path>src/test/flex</path>
+					</sourcePaths>
+
+					<accessible>false</accessible>
+					<allowSourcePathOverlap>true</allowSourcePathOverlap>
+					<compiledLocales>
+						<locale>en_US</locale>
+					</compiledLocales>
+					<configurationReport>true</configurationReport>
+					<encoding>UTF-8</encoding>
+					<debug>false</debug>
+					<keepGeneratedActionscript>false</keepGeneratedActionscript>
+					<optimize>true</optimize>
+					<targetPlayer>10.2.0</targetPlayer>
+					<verboseStacktraces>true</verboseStacktraces>
+
+					<metadata>
+						<title>VectorCollection</title>
+						<description>http://vectorcollection.riaforge.org/</description>
+						<publishers>
+							<publisher>BealeARTS</publisher>
+						</publishers>
+						<creators>
+							<creator>David Beale</creator>
+						</creators>
+						<languages>
+							<language>EN</language>
+						</languages>
+					</metadata>
+
+				</configuration>
+
+				<executions>
+					<execution>
+						<id>compile-swc</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile-swc</goal>
+						</goals>
+					</execution>
+				</executions>
+
+			</plugin>
+
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.sonatype.flexmojos
+										</groupId>
+										<artifactId>
+											flexmojos-maven-plugin
+										</artifactId>
+										<versionRange>
+											[3.8,)
+										</versionRange>
+										<goals>
+											<goal>test-compile</goal>
+											<goal>compile-swc</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		
+	</build>
+
+
+	<dependencies>
+
+		<dependency>
+			<groupId>com.adobe.flex.framework</groupId>
+			<artifactId>playerglobal</artifactId>
+			<version>${flex-framework.version}</version>
+			<type>swc</type>
+			<classifier>10.2</classifier>
+			<scope>compile</scope>
+		</dependency>
+
+		<!--
+			Flex Framework libs
+		-->
+
+		<dependency>
+			<groupId>com.adobe.flex.framework</groupId>
+			<artifactId>framework</artifactId>
+			<version>${flex-framework.version}</version>
+			<type>swc</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.adobe.flex.framework</groupId>
+			<artifactId>spark</artifactId>
+			<version>${flex-framework.version}</version>
+			<type>swc</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.adobe.flex.framework</groupId>
+			<artifactId>sparkskins</artifactId>
+			<version>${flex-framework.version}</version>
+			<type>swc</type>
+			<scope>compile</scope>
+		</dependency>
+
+
+		<!-- Flex framework resource bundles -->
+		<dependency>
+			<groupId>com.adobe.flex.framework</groupId>
+			<artifactId>flex-framework</artifactId>
+			<version>${flex-framework.version}</version>
+			<type>pom</type>
+		</dependency>
+
+
+		<!-- TEST -->
+
+		<dependency>
+			<groupId>com.adobe.flexunit</groupId>
+			<artifactId>flexunit</artifactId>
+			<version>${flexunit4.version}</version>
+			<type>swc</type>
+			<scope>test</scope>
+		</dependency>
+	
+	</dependencies>
+
+
+	<!--
+		Why are Flex compiler artifacts not promoted to central ??
+	-->
+	<repositories>
+		<repository>
+			<id>Forge</id>
+			<url>https://repository.sonatype.org/content/groups/forge/</url>
+		</repository>
+		<repository>
+			<id>cairngorm3</id>
+			<url>http://svn.code.sf.net/adobe/cairngorm/code/cairngorm3/maven-repository/</url>
+		</repository>
+	</repositories>
+	
+	<pluginRepositories>
+		<pluginRepository>
+			<id>Forge</id>
+			<url>https://repository.sonatype.org/content/groups/forge/</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+
+	<scm>
+		<connection>scm:svn:http://svn.riaforge.org/vectorcollection/trunk/</connection>
+		<developerConnection>scm:svn:http://svn.riaforge.org/vectorcollection/trunk/</developerConnection>
+		<url>http://svn.riaforge.org/vectorcollection/trunk/</url>
+	</scm>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>david.beale</id>
+			<name>David Beale</name>
+			<email>david.beale@bealearts.co.uk</email>
+			<organization>BealeARTS</organization>
+		</developer>
+	</developers>
+	
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.4</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>				
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+</project>
