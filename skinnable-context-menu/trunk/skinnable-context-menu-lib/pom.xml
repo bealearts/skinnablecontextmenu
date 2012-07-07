@@ -1,0 +1,17 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.bealearts</groupId>
+        <artifactId>skinnable-context-menu</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>skinnable-context-menu-lib</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>swc</packaging>
+
+    <name>Skinnable Context Menu Library</name>
+    <description>A Drop in component, which turns the normally native context menu (right-click menu) of a Flex application into a standard Flex menu, allowing you to skin the menu to match the look &amp; feel of your application.</description>
+
+</project>

@@ -1,20 +1,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
 	<groupId>com.bealearts</groupId>
 	<artifactId>skinnable-context-menu</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>VectorCollection</name>
-	<description>Flex library which allows one to wrap a Vector in order to access it using Binding in the same way as an ArrayCollection.</description>
-	<url>http://vectorcollection.riaforge.org/</url>
-
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>7</version>
-	</parent>
+    <name>Skinnable Context Menu</name>
+    <description>A Drop in component, which turns the normally native context menu (right-click menu) of a Flex application into a standard Flex menu, allowing you to skin the menu to match the look &amp; feel of your application.</description>
+    <url>http://skinnablecontextmenu.riaforge.org/</url>
 
 	<properties>
 		<flex-framework.version>4.5.1.21328</flex-framework.version>
@@ -28,8 +28,8 @@
     </modules>
 
 	<build>
-		<sourceDirectory>skinnable-context-menu-lib/src/main/flex</sourceDirectory>
-		<testSourceDirectory>skinnable-context-menu-lib/src/test/flex</testSourceDirectory>
+		<sourceDirectory>${basedir}/src/main/flex</sourceDirectory>
+		<testSourceDirectory>${basedir}/src/test/flex</testSourceDirectory>
 
 		<plugins>
 			<plugin>
@@ -37,6 +37,7 @@
 				<artifactId>flexmojos-maven-plugin</artifactId>
 				<version>${flexmojos.version}</version>
 				<extensions>true</extensions>
+                <inherited>true</inherited>
 
 				<dependencies>
 					<dependency>
@@ -74,7 +75,7 @@
 
 					<metadata>
 						<title>VectorCollection</title>
-						<description>http://vectorcollection.riaforge.org/</description>
+						<description>http://skinnablecontextmenu.riaforge.org/</description>
 						<publishers>
 							<publisher>BealeARTS</publisher>
 						</publishers>
@@ -88,56 +89,9 @@
 
 				</configuration>
 
-				<executions>
-					<execution>
-						<id>compile-swc</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>compile-swc</goal>
-						</goals>
-					</execution>
-				</executions>
-
 			</plugin>
 
 		</plugins>
-
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.sonatype.flexmojos
-										</groupId>
-										<artifactId>
-											flexmojos-maven-plugin
-										</artifactId>
-										<versionRange>
-											[3.8,)
-										</versionRange>
-										<goals>
-											<goal>test-compile</goal>
-											<goal>compile-swc</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 		
 	</build>
 
@@ -225,9 +179,9 @@
 
 
 	<scm>
-		<connection>scm:svn:http://svn.riaforge.org/vectorcollection/trunk/</connection>
-		<developerConnection>scm:svn:http://svn.riaforge.org/vectorcollection/trunk/</developerConnection>
-		<url>http://svn.riaforge.org/vectorcollection/trunk/</url>
+		<connection>scm:svn:http://svn.riaforge.org/skinnablecontextmenu/trunk/</connection>
+		<developerConnection>scm:svn:http://svn.riaforge.org/skinnablecontextmenu/trunk/</developerConnection>
+		<url>http://svn.riaforge.org/skinnablecontextmenu/trunk/</url>
 	</scm>
 
 	<licenses>
