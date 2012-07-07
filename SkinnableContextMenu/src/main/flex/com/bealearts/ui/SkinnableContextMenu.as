@@ -17,7 +17,13 @@
  */
 package com.bealearts.ui
 {
+	import com.bealearts.util.ExternalClipboard;
+	import com.bealearts.util.JavascriptInjector;
+	
+	import flash.desktop.Clipboard;
+	import flash.desktop.ClipboardFormats;
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
 	import flash.geom.Point;
@@ -28,6 +34,7 @@ package com.bealearts.ui
 	import flash.system.System;
 	import flash.ui.ContextMenu;
 	import flash.ui.ContextMenuItem;
+	import flash.utils.flash_proxy;
 	
 	import mx.collections.ArrayCollection;
 	import mx.collections.IViewCursor;
@@ -36,16 +43,21 @@ package com.bealearts.ui
 	import mx.core.FlexGlobals;
 	import mx.core.UIComponent;
 	import mx.events.MenuEvent;
+	import mx.managers.FocusManager;
+	import mx.managers.IFocusManagerComponent;
 	
 	import org.osmf.utils.URL;
 	
 	import spark.components.Application;
+	import spark.components.TextArea;
+	import spark.core.IEditableText;
+	import spark.modules.Module;
 
 	
 	/**
 	 * Turns the Flex Context Menu from a Native implementation into a standard skinnable Flex menu
 	 */
-	public final class SkinnableContextMenu
+	public final class SkinnableContextMenu extends EventDispatcher
 	{
 		/* PUBLIC */
 		
@@ -67,15 +79,22 @@ package com.bealearts.ui
 			
 			instansiated = true;
 			
-			// Can't do anything if there is not a browser!
-			if ( ExternalInterface.available )
-			{
-				// Inject javascript
-				this.injectJavascript();
+			// Default items
+			this.defaultItems = [
+				this.settingsMenuItem,
+				this.globalSettingsMenuItem,
+				this.aboutMenuItem
+			];
 			
-				// Listen for right click
+			// Setup javascriot to listen for right click
+			if (JavascriptInjector.inject(javascriptCode))
+			{
+				// Create class
+				ExternalInterface.call('eval', 'window.skinnableContextMenu = new SkinnableContextMenu("' + ExternalInterface.objectID + '");');
+				
 				ExternalInterface.addCallback('rightMouseClick', this.onRightClick);
 			}
+			
 		}
 		
 		
@@ -106,6 +125,17 @@ package com.bealearts.ui
 		private var menu:Menu = null;
 		
 		
+		/**
+		 * Reference to current UIComponent
+		 */
+		private var component:UIComponent = null;
+		
+		
+		/**
+		 * The Focus state of the component
+		 */
+		private var componentHadFocus:Boolean = false;
+		
 		
 		/**
 		 * Default menu items
@@ -113,6 +143,9 @@ package com.bealearts.ui
 		private var aboutMenuItem:ContextMenuItem = new ContextMenuItem('About Adobe Flash Player ' + Capabilities.version.substr(4) + '...', false);
 		private var settingsMenuItem:ContextMenuItem = new ContextMenuItem('Settings...', true);
 		private var globalSettingsMenuItem:ContextMenuItem = new ContextMenuItem('Global Settings...', false);
+		
+		private var defaultItems:Array = null;
+		
 		
 		/**
 		 * Clipboard menu items
@@ -123,6 +156,7 @@ package com.bealearts.ui
 		private var deleteMenuItem:ContextMenuItem = new ContextMenuItem('Delete');
 		private var selectAllMenuItem:ContextMenuItem = new ContextMenuItem('Select All', true);
 		
+
 		
 		
 		/**
@@ -135,11 +169,10 @@ package com.bealearts.ui
 				this.menu.hide();
 			
 			
-			var x:Number = this.app.stage.mouseX;
-			var y:Number = this.app.stage.mouseY;
+			const x:Number = this.app.stage.mouseX;
+			const y:Number = this.app.stage.mouseY;
 			
-			var components:Array = this.app.stage.getObjectsUnderPoint( new Point(x,y) );
-			var component:UIComponent = null;
+			const components:Array = this.app.stage.getObjectsUnderPoint( new Point(x,y) );
 			var item:Object = null;
 			
 			// Default to the application
@@ -150,49 +183,65 @@ package com.bealearts.ui
 			{
 				if ( item as UIComponent )
 				{
-					component = item as UIComponent;
-					if (component.contextMenu)
+					this.component = item as UIComponent;
+					if (this.component.contextMenu)
 					{
-						contextMenu = component.contextMenu;
+						contextMenu = this.component.contextMenu;
 						break;
 					}
 				}
-			}
-
-			
-			// Default items
-			var defaultItems:Array = [
-				this.settingsMenuItem,
-				this.globalSettingsMenuItem,
-				this.aboutMenuItem
-			];
+			}			
 			
 			
-		
+			
+			// Save components focus state
+			if ( (this.component as IFocusManagerComponent) && this.component == this.component.focusManager.getFocus() )
+				this.componentHadFocus = true;
+			else
+				this.componentHadFocus = false;
+			
 			
 			// Build items
 			
 			var menuItems:Array = (new Array).concat( contextMenu.customItems );
 			
-			// Clipboard items
-			if (contextMenu.clipboardMenu)
+			
+			const textComponent:IEditableText = this.component as IEditableText; 
+			
+			// Clipboard text edit items
+			if (contextMenu.clipboardMenu && textComponent)
 			{
 				if ( contextMenu.clipboardItems.cut )
+				{
+					this.cutMenuItem.enabled = (textComponent.selectionActivePosition != textComponent.selectionAnchorPosition);
 					menuItems.push( this.cutMenuItem );
+				}
 				
 				if ( contextMenu.clipboardItems.copy )
+				{
+					this.copyMenuItem.enabled = (textComponent.selectionActivePosition != textComponent.selectionAnchorPosition);
 					menuItems.push( this.copyMenuItem );
+				}
 				
 				if ( contextMenu.clipboardItems.paste )
+				{
+					this.pasteMenuItem.enabled = ExternalClipboard.generalClipboard.hasFormat(ClipboardFormats.TEXT_FORMAT);
 					menuItems.push( this.pasteMenuItem );
-				
+				}	
+					
 				if ( contextMenu.clipboardItems.clear )
+				{
+					this.deleteMenuItem.enabled = (textComponent.selectionActivePosition != textComponent.selectionAnchorPosition);
 					menuItems.push( this.deleteMenuItem );
+				}
 				
-				// Select All
 				if ( contextMenu.clipboardItems.selectAll )
+				{
+					this.selectAllMenuItem.enabled = (textComponent.text != "");
 					menuItems.push( this.selectAllMenuItem );
+				}
 			}
+			
 			
 			// Default Flash Player items
 			if ( this.showDefaultItems )
@@ -216,28 +265,23 @@ package com.bealearts.ui
 			this.menu.dataDescriptor = new ContextMenuDataDescriptor();
 			this.menu.labelField = 'caption';
 			this.menu.addEventListener(MenuEvent.ITEM_CLICK, this.onMenuSelection, false, 0, true);
+			this.menu.addEventListener(MenuEvent.MENU_SHOW, this.onMenuShown, false ,0 , true);
 	
 			// Position
 			this.menu.show(x, y);
 		}
 		
+	
 		
 		
 		/**
-		 * Inject the js code
+		 * Handle the display of the menu
 		 */
-		private function injectJavascript():void
+		private function onMenuShown(Event:MenuEvent):void
 		{
-			var asset:ByteArrayAsset = new this.javascriptCode();
-			
-			// Read the javascript
-			var jsCode:String = asset.readUTFBytes(asset.bytesAvailable);
-			
-			// Inject
-			ExternalInterface.call('eval', jsCode);
-			
-			// Create class
-			ExternalInterface.call('eval', 'window.skinnableContextMenu = new SkinnableContextMenu("' + ExternalInterface.objectID + '");');
+			// Restore focus to component
+			if ( this.componentHadFocus )
+				IFocusManagerComponent(this.component).setFocus();
 		}
 		
 		
@@ -247,8 +291,12 @@ package com.bealearts.ui
 		 */
 		private function onMenuSelection(event:MenuEvent):void
 		{
+			const textComponent:IEditableText = this.component as IEditableText;
+			
 			switch ( ContextMenuItem(event.item) )
 			{
+				// Default Items
+				
 				case this.settingsMenuItem:
 					Security.showSettings();
 					event.preventDefault();
@@ -263,6 +311,32 @@ package com.bealearts.ui
 					this.openURL('http://www.adobe.com/software/flash/about/');
 					event.preventDefault();
 				break;
+				
+				
+				// Clipboard text edit items
+				
+				case this.selectAllMenuItem:
+					if (textComponent)
+						textComponent.selectAll();
+				break;
+				
+				case this.copyMenuItem:
+					if (textComponent)
+						ExternalClipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, selecteText(textComponent));
+				break;
+				
+				case this.pasteMenuItem:
+					if (textComponent)
+						insertText(textComponent, String(ExternalClipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT)) );
+				break;
+				
+				case this.cutMenuItem:
+					if (textComponent)
+					{
+						ExternalClipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, selecteText(textComponent));
+						insertText(textComponent, '');
+					}
+				break;
 			}
 		}
 		
@@ -275,5 +349,26 @@ package com.bealearts.ui
 			navigateToURL( new URLRequest(url) );
 		}
 		
+		
+		
+		/**
+		 * Return the selected text
+		 */
+		private function selecteText(textComponent:IEditableText):String
+		{
+			return textComponent.text.substring(textComponent.selectionAnchorPosition, textComponent.selectionActivePosition);
+		}
+		
+		
+		/**
+		 * Insert text into selected text
+		 */
+		private function insertText(textComponent:IEditableText, text:String):void
+		{
+			// TODO: clear current selection and insert text
+		}
+		
+		
+
 	}
 }
