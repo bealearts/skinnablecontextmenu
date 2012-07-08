@@ -51,6 +51,27 @@ import spark.core.IEditableText;
 	public final class SkinnableContextMenu extends EventDispatcher
 	{
 		/* PUBLIC */
+
+
+        /**
+         * Enable the skinnable Context menu
+         */
+        public function get enabled():Boolean
+        {
+            return _enabled;
+        }
+
+        public function set enabled(value:Boolean):void
+        {
+            if (value != _enabled)
+            {
+                _enabled = value;
+
+                JavascriptContainer.execute('window.skinnableContextMenu.enabled = ' + _enabled.toString());
+            }
+        }
+
+
 		
 		/**
 		 * Display default flash items
@@ -58,6 +79,12 @@ import spark.core.IEditableText;
 		 * <p>Display the Settings, Global Settings and About Flash menu items</p>
 		 */
 		public var showDefaultItems:Boolean = true;
+
+
+        /**
+         * Display the clipboard items for editable Text Fields
+         */
+        public var showClipboardItems:Boolean = true;
 		
 		
 		/**
@@ -92,12 +119,17 @@ import spark.core.IEditableText;
 		
 		
 		/* PRIVATE */
+
 		
 		/**
 		 * Indicates if Class has been instansiated
 		 */
 		private static var instansiated:Boolean = false;
-		
+
+
+        private var _enabled:Boolean = true;
+
+
 		
 		/**
 		 * Reference to the application
@@ -202,7 +234,7 @@ import spark.core.IEditableText;
 			const textComponent:IEditableText = this.component as IEditableText; 
 			
 			// Clipboard text edit items
-			if (contextMenu.clipboardMenu && textComponent)
+			if (contextMenu.clipboardMenu && textComponent && showClipboardItems)
 			{
 				if ( contextMenu.clipboardItems.cut )
 				{
@@ -243,7 +275,7 @@ import spark.core.IEditableText;
 			
 			
 			
-			// Process seperators
+			// Process separators
 			var collection:ArrayCollection = new ArrayCollection(menuItems);
 			var cursor:IViewCursor = collection.createCursor();
 			while ( cursor.moveNext() )
@@ -331,6 +363,9 @@ import spark.core.IEditableText;
 					}
 				break;
 			}
+
+            // Clear the menu
+            this.menu = null;
 		}
 		
 		

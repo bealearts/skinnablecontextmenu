@@ -6,13 +6,19 @@
 >
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
-		<ui:SkinnableContextMenu showDefaultItems="true" />
+		<ui:SkinnableContextMenu enabled="{menuEnabled.selected}" showDefaultItems="{defaultItems.enabled}"
+                showClipboardItems="{clipboardItems.selected}"/>
 	</fx:Declarations>
 
 	<s:layout>
 		<s:VerticalLayout />
 	</s:layout>
-	
+
+    <s:HGroup>
+        <s:CheckBox id="menuEnabled" label="Skinnable Context Menu enabled" selected="true" />
+        <s:CheckBox id="defaultItems" label="Show default context menu items" selected="true" />
+        <s:CheckBox id="clipboardItems" label="Show Clipboard context menu items" selected="true" />
+    </s:HGroup>
 	
 	<s:TextArea>
 		
