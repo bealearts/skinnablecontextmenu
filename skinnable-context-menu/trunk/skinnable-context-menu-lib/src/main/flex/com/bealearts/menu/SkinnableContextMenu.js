@@ -26,19 +26,26 @@ function SkinnableContextMenu(flexApplicationID)
 	 */
 	this.init = function()
 	{
-		
+        // Reference to use in event handler anonymous functions
+        var self = this;
+
 		if (window.addEventListener)
-			window.addEventListener('mousedown', this.onWindowMouse, true);		
+			window.addEventListener('mousedown', function(event){ self.onWindowMouse(event) }, true);
 	}
-	
-	
+
+
+    /**
+     * Skinnable menu enabled
+     */
+    this.enabled = true;
+
 	/**
 	 * Handle window mouse click
 	 */
 	this.onWindowMouse = function(event)
 	{
 		// Right click on Flex application
-		if ( event.button != 0 && event.target.id == window.skinnableContextMenu.flexApplicationID )
+		if ( event.button != 0 && event.target.id == window.skinnableContextMenu.flexApplicationID && this.enabled )
 		{
 			// Prevent normal event chain
 			if (event.stopPropagation)
